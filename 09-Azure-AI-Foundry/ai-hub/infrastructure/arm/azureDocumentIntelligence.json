@@ -1,0 +1,208 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "rgName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide the name of the resource group where the Azure Doc Intel instance that will be created"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Select the location for the Azure Doc Intel instance that will be created"
+            }
+        },
+        "prefix": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide name for the Azure Doc Intel instance that will be created"
+            }
+        },
+        "docSubnetId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide the subnet id where the Azure Doc Intel instance that will be connected"
+            }
+        },
+        "docSystemIdentity": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "docNwLocation": {
+            "type": "string",
+            "defaultValue": "[parameters('location')]"
+        },
+        "docLocation": {
+            "type": "string",
+            "defaultValue": "[parameters('location')]"
+        },
+        "docDisableNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "docRbacAuthz": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "docRestrictOutboundNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "docMonCreation": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        }
+    },
+    "variables": {
+        "name-compliant-azureDocumentIntelligence": "[concat(parameters('prefix'), '-', parameters('location'), '-azdocintel')]",
+        "name-compliant-doc-pe": "[concat(parameters('prefix'), '-', parameters('location'), '-azdocintel-pe')]",
+        "name-compliant-doc-asg": "[concat(parameters('prefix'), '-', parameters('location'), '-azdocintel-asg')]",
+        "name-compliant-azureDocumentIntelligence-nic": "[concat(variables('name-compliant-azureDocumentIntelligence'), '-nic')]",
+        "name-compliant-storage": "[toLower(take(concat(replace(replace(parameters('prefix'), '-', ''), '_', ''), parameters('location'), uniqueString(deployment().name)), 23))]",
+        "name-compliant-azMon": "[concat(parameters('prefix'), '-', parameters('location'), '-azmon')]",
+        "visionIdentity": {
+            "type": "SystemAssigned"
+        },
+        "denyFwAcl": {
+            "defaultAction": "Deny",
+            "bypass": "AzureServices",
+            "ipRules": [],
+            "virtualNetworkRules": []
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2022-09-01",
+            "name": "[parameters('rgName')]",
+            "location": "[parameters('location')]"
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "azureDocIntel",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups/', parameters('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.CognitiveServices/accounts",
+                            "apiVersion": "2022-03-01",
+                            "name": "[variables('name-compliant-azureDocumentIntelligence')]",
+                            "location": "[parameters('docLocation')]",
+                            "identity": "[if(equals(parameters('docSystemIdentity'), 'Yes'), variables('visionIdentity'), json('null'))]",
+                            "sku": {
+                                "name": "S0"
+                            },
+                            "kind": "FormRecognizer",
+                            "properties": {
+                                "customSubDomainName": "[toLower(variables('name-compliant-azureDocumentIntelligence'))]",
+                                "publicNetworkAccess": "[if(equals(parameters('docDisableNetworkAccess'), 'Yes'), 'Disabled', 'Enabled')]",
+                                "disableLocalAuth": "[if(equals(parameters('docRbacAuthz'), 'Yes'), bool('true'), bool('false'))]",
+                                "restrictOutboundNetworkAccess": "[if(equals(parameters('docRestrictOutboundNetworkAccess'), 'Yes'), bool('true'), bool('false'))]",
+                                "networkAcls": "[if(equals(parameters('docDisableNetworkAccess'), 'Yes'), variables('denyFwAcl'), json('null'))]"
+                            }
+                        },
+                        {
+                            "condition": "[equals(parameters('docMonCreation'), 'Yes')]",
+                            "type": "Microsoft.CognitiveServices/accounts/providers/diagnosticSettings",
+                            "apiVersion": "2021-05-01-preview",
+                            "name": "[concat(variables('name-compliant-azureDocumentIntelligence'), '/', 'Microsoft.Insights/diag')]",
+                            "location": "[parameters('docLocation')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.CognitiveServices/accounts/', variables('name-compliant-azureDocumentIntelligence'))]"
+                            ],
+                            "properties": {
+                                "workspaceId": "[concat(subscription().id, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.OperationalInsights/workspaces/', variables('name-compliant-azMon'))]",
+                                "logs": [
+                                    {
+                                        "categoryGroup": "allLogs",
+                                        "enabled": true
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "condition": "[and(equals(parameters('docDisableNetworkAccess'), 'Yes'), not(empty(parameters('docSubnetId'))))]",
+                            "type": "Microsoft.Network/applicationSecurityGroups",
+                            "apiVersion": "2023-04-01",
+                            "name": "[variables('name-compliant-doc-asg')]",
+                            "location": "[parameters('docNwLocation')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.CognitiveServices/accounts/', variables('name-compliant-azureDocumentIntelligence'))]"
+                            ],
+                            "properties": {}
+                        },
+                        {
+                            "condition": "[and(equals(parameters('docDisableNetworkAccess'), 'Yes'), not(empty(parameters('docSubnetId'))))]",
+                            "type": "Microsoft.Network/privateEndpoints",
+                            "apiVersion": "2021-05-01",
+                            "name": "[variables('name-compliant-doc-pe')]",
+                            "location": "[parameters('docNwLocation')]",
+                            "dependsOn": [
+                                "[concat('Microsoft.CognitiveServices/accounts/', variables('name-compliant-azureDocumentIntelligence'))]",
+                                "[concat('Microsoft.Network/applicationSecurityGroups/', variables('name-compliant-doc-asg'))]"
+                            ],
+                            "properties": {
+                                "customNetworkInterfaceName": "[variables('name-compliant-azureDocumentIntelligence-nic')]",
+                                "privateLinkServiceConnections": [
+                                    {
+                                        "name": "[variables('name-compliant-azureDocumentIntelligence')]",
+                                        "properties": {
+                                            "privateLinkServiceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.CognitiveServices/accounts/', variables('name-compliant-azureDocumentIntelligence'))]",
+                                            "groupIds": [
+                                                "account"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "subnet": {
+                                    "id": "[parameters('docSubnetId')]"
+                                },
+                                "applicationSecurityGroups": [
+                                    {
+                                        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('rgName'), '/providers/Microsoft.Network/applicationSecurityGroups/', variables('name-compliant-doc-asg'))]"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

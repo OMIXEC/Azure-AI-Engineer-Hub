@@ -1,0 +1,4 @@
+aiohttp>=3.8.5,<=3.12.2
+../../core/azure-core
+../../identity/azure-identity
+-e ../../../eng/tools/azure-sdk-tools

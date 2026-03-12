@@ -1,0 +1,124 @@
+{
+  "STORAGE_ACCOUNT_SUBSCRIPTION_ID": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_ACCOUNT_SUBSCRIPTION_ID')"
+  },
+  "STORAGE_ACCOUNT_RESOURCE_GROUP_NAME": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_ACCOUNT_RESOURCE_GROUP_NAME')"
+  },
+  "STORAGE_ACCOUNT_NAME": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_ACCOUNT_NAME')"
+  },
+  "STORAGE_CONTAINER_NAME_UPLOAD_MOVIES": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_CONTAINER_NAME_UPLOAD_MOVIES')"
+  },
+  "STORAGE_CONTAINER_NAME_UPLOAD_NEWS": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_CONTAINER_NAME_UPLOAD_NEWS')"
+  },
+  "STORAGE_CONTAINER_NAME_RAW": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_CONTAINER_NAME_RAW')"
+  },
+  "STORAGE_CONTAINER_NAME_CURATED": {
+    "type": "String",
+    "value": "@appsetting('STORAGE_CONTAINER_NAME_CURATED')"
+  },
+  "AZURE_OPENAI_ENDPOINT": {
+    "type": "String",
+    "value": "@appsetting('AZURE_OPENAI_ENDPOINT')"
+  },
+  "DEFAULT_LANGUAGE": {
+    "type": "String",
+    "value": "@appsetting('DEFAULT_LANGUAGE')"
+  },
+  "META_PROMPT": {
+    "type": "String",
+    "value": "@appsetting('META_PROMPT')"
+  },
+  "USER_MESSAGE": {
+    "type": "String",
+    "value": "Please summarize the content in the provided file, and create the required JSON file for me to download as a result with the file named as response."
+  },
+  "ASSISSTANT_NAME": {
+    "type": "String",
+    "value": "videoAssistant"
+  },
+  "AZURE_OPENAI_DEPLOYMENT_NAME": {
+    "type": "String",
+    "value": "@appsetting('AZURE_OPENAI_DEPLOYMENT_NAME')"
+  },
+  "VIDEO_INDEXER_ID": {
+    "type": "String",
+    "value": "@appsetting('VIDEO_INDEXER_ID')"
+  },
+  "VIDEO_INDEXER_ACCOUNT_ID": {
+    "type": "String",
+    "value": "@appsetting('VIDEO_INDEXER_ACCOUNT_ID')"
+  },
+  "VIDEO_INDEXER_TIER": {
+    "type": "String",
+    "value": "@appsetting('VIDEO_INDEXER_TIER')"
+  },
+  "WORKFLOWS_LOCATION_NAME": {
+    "type": "String",
+    "value": "@appsetting('WORKFLOWS_LOCATION_NAME')"
+  },
+  "ConversionserviceConnectionRuntimeUrl": {
+    "type": "String",
+    "value": "@appsetting('ConversionserviceConnectionRuntimeUrl')"
+  },
+  "ConversionserviceAuthentication": {
+    "type": "Object",
+    "value": {
+      "type": "ManagedServiceIdentity"
+    }
+  },
+  "Videoindexer-V2ConnectionRuntimeUrl": {
+    "type": "String",
+    "value": "@appsetting('Videoindexer-V2ConnectionRuntimeUrl')"
+  },
+  "Videoindexer-V2Authentication": {
+    "type": "Object",
+    "value": {
+      "type": "ManagedServiceIdentity"
+    }
+  },
+  "AzureeventgridConnectionRuntimeUrl": {
+    "type": "String",
+    "value": "@appsetting('AzureeventgridConnectionRuntimeUrl')"
+  },
+  "AzureeventgridAuthentication": {
+    "type": "Object",
+    "value": {
+      "type": "ManagedServiceIdentity"
+    }
+  },
+  "AZURE_BLOB_STORAGE_ENDPOINT": {
+    "type": "String",
+    "value": "@appsetting('AZURE_BLOB_STORAGE_ENDPOINT')"
+  },
+  "FUNCTION_SHORTCLIP_ID": {
+    "type": "String",
+    "value": "@appsetting('FUNCTION_SHORTCLIP_ID')"
+  },
+  "FUNCTION_SHORTCLIP_HOSTNAME": {
+    "type": "String",
+    "value": "@appsetting('FUNCTION_SHORTCLIP_HOSTNAME')"
+  },
+  "FUNCTION_SHORTCLIP_KEY": {
+    "type": "String",
+    "value": "@appsetting('FUNCTION_SHORTCLIP_KEY')"
+  },
+  "FUNCTION_SHORTCLIP_FUNCTION_NAME": {
+    "type": "String",
+    "value": "StartWorkflow"
+  },
+  "LOGIC_APP_ID": {
+    "type": "String",
+    "value": "@appsetting('LOGIC_APP_ID')"
+  }
+}

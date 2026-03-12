@@ -1,0 +1,11 @@
+{
+  "reportTypeCommentUsage": true,
+  "reportMissingImports": false,
+  "pythonVersion": "3.11",
+  "extraPaths": [
+    "./../../core/azure-core",
+    "./../../evaluation/azure-ai-evaluation",
+    "./../../identity/azure-identity",
+    "./../../monitor/azure-monitor-opentelemetry"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json#",
+    "view": {
+        "kind": "Form",
+        "properties": {
+            "title": "Service Enablement for Enterprise Azure OpenAI Hub",
+            "steps": [
+                {
+                    "name": "basics",
+                    "label": "Policy Initiative for Azure OpenAI",
+                    "elements": [
+                        {
+                            "name": "PolicyInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": true,
+                            "options": {
+                                "text": "The following policy definitions will be created for Azure OpenAI: <ul><li>Outbound network access should be restricted for Cognitive Services<li>Network ACLs should be restricted for Cognitive Services<li>Deploy Diagnostic Settings for Azure OpenAI (Cognitive Services) to Log Analytics workspace<li>Cognitive Services accounts should use a managed identity<li>Cognitive Services accounts should have local authentication methods disabled<li>Cognitive Services accounts should enable data encryption with a customer-managed key<li>Configure Cognitive Services accounts to disable public network access<li>Cognitive Services accounts should use customer owned storage<li>Configure Cognitive Services accounts to disable local authentication methods<li>Cognitive Services accounts should disable public network access<li>Cognitive Services accounts should restrict network access</ul>",
+                                "uri": "https://github.com/Azure/ai-hub/blob/main/docs/security.md#azure-openai",
+                                "style": "Info"
+                            }
+                        },
+                        {
+                            "name": "resourceScope",
+                            "type": "Microsoft.Common.ResourceScope",
+                            "location": {
+                                "resourceTypes": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "outputs": {
+            "kind": "ManagementGroup",
+            "location": "[steps('basics').resourceScope.location.name]",
+            "managementGroupId": "[steps('basics').resourceScope.managementGroup.id]",
+            "parameters": {
+                "topLevelManagementGroupPrefix": "[steps('basics').resourceScope.managementGroup.id]"
+            }
+        }
+    }
+}

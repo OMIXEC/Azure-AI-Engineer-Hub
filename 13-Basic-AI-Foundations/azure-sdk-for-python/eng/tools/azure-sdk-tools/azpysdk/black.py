@@ -1,0 +1,104 @@
+import argparse
+import os
+import sys
+import subprocess
+
+from typing import Optional, List
+from subprocess import CalledProcessError
+
+from ci_tools.functions import install_into_venv
+from ci_tools.variables import in_ci, discover_repo_root, set_envvar_defaults
+from ci_tools.environment_exclusions import is_check_enabled
+from ci_tools.logging import logger
+
+from .Check import Check
+
+BLACK_VERSION = "24.4.0"
+REPO_ROOT = discover_repo_root()
+
+
+class black(Check):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def register(
+        self, subparsers: "argparse._SubParsersAction", parent_parsers: Optional[List[argparse.ArgumentParser]] = None
+    ) -> None:
+        """Register the `black` check. The black check installs black and runs black against the target package."""
+        parents = parent_parsers or []
+        p = subparsers.add_parser("black", parents=parents, help="Run the code formatter black check")
+        p.set_defaults(func=self.run)
+
+    def run(self, args: argparse.Namespace) -> int:
+        """Run the black check command."""
+        logger.info("Running black check...")
+
+        set_envvar_defaults()
+
+        targeted = self.get_targeted_directories(args)
+
+        results: List[int] = []
+
+        for parsed in targeted:
+            if os.getcwd() != parsed.folder:
+                os.chdir(parsed.folder)
+            package_dir = parsed.folder
+            package_name = parsed.name
+
+            executable, staging_directory = self.get_executable(args.isolate, args.command, sys.executable, package_dir)
+            logger.info(f"Processing {package_name} for black check")
+
+            self.install_dev_reqs(executable, args, package_dir)
+
+            logger.info(f"Running black against {package_name}")
+
+            if in_ci():
+                if not is_check_enabled(package_dir, "black", default=False):
+                    logger.info(f"Package {package_name} opts-out of black check.")
+                    continue
+
+            result = self.format_directory(executable, package_dir)
+            if result is None:
+                # install or formatting failed, already logged
+                results.append(1)
+                continue
+
+            if result.stderr and "reformatted" in result.stderr.decode("utf-8"):
+                if in_ci():
+                    logger.info(
+                        f"The package {package_name} needs reformat. Run `azpysdk black .` locally from the package root to reformat."
+                    )
+                    results.append(1)
+                else:
+                    logger.info(f"The package {package_name} was reformatted.")
+            else:
+                logger.info(f"The package {package_name} is properly formatted, no files changed.")
+
+        return max(results) if results else 0
+
+    @staticmethod
+    def format_directory(executable: str, target_dir: str) -> Optional[subprocess.CompletedProcess]:
+        """Run black on *target_dir* using the repo-wide config.
+
+        Installs the pinned black version into the environment of *executable*,
+        then formats all Python files under *target_dir*.
+        """
+        try:
+            install_into_venv(executable, [f"black=={BLACK_VERSION}"], target_dir)
+        except CalledProcessError as e:
+            logger.error(f"Failed to install black, skipping formatting: {e}")
+            return None
+
+        config_file_location = os.path.join(REPO_ROOT, "eng/black-pyproject.toml")
+        try:
+            return subprocess.run(
+                [executable, "-m", "black", f"--config={config_file_location}", target_dir],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Black formatting failed for {target_dir}: {e}")
+            if e.stderr:
+                logger.error(e.stderr.decode("utf-8"))
+            return None

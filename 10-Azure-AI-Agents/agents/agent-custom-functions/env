@@ -1,0 +1,2 @@
+PROJECT_ENDPOINT="https://myfoundry.services.ai.azure.com/api/projects/firstProject"
+MODEL_DEPLOYMENT_NAME="gpt-4o"

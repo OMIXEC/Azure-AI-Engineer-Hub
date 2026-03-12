@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json#",
+    "view": {
+        "kind": "Form",
+        "properties": {
+            "title": "Service Enablement for Enterprise Azure OpenAI Hub",
+            "steps": [
+                {
+                    "name": "basics",
+                    "label": "Policy Initiative for Azure AI Search",
+                    "elements": [
+                        {
+                            "name": "PolicyInfo",
+                            "type": "Microsoft.Common.InfoBox",
+                            "visible": true,
+                            "options": {
+                                "text": "The following policy definitions will be created for Azure AI Search: <ul><li>Deploy Diagnostic Settings for Azure AI Search to Log Analytics workspace<li>Azure Azure AI Search service should use a SKU that supports private link<li>Azure Azure AI Search services should disable public network access<li>Azure Azure AI Search services should have local authentication methods disabled<li>Azure Azure AI Search services should use customer-managed keys to encrypt data at rest<li>Configure Azure Azure AI Search services to disable local authentication<li>Configure Azure Azure AI Search services to disable public network access</ul>",
+                                "uri": "https://github.com/Azure/ai-hub/blob/main/docs/security.md#azure-ai-search",
+                                "style": "Info"
+                            }
+                        },
+                        {
+                            "name": "resourceScope",
+                            "type": "Microsoft.Common.ResourceScope",
+                            "location": {
+                                "resourceTypes": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "outputs": {
+            "kind": "ManagementGroup",
+            "location": "[steps('basics').resourceScope.location.name]",
+            "managementGroupId": "[steps('basics').resourceScope.managementGroup.id]",
+            "parameters": {
+                "topLevelManagementGroupPrefix": "[steps('basics').resourceScope.managementGroup.id]"
+            }
+        }
+    }
+}

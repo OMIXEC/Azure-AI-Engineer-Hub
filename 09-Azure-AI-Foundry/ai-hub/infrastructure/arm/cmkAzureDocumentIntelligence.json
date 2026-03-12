@@ -1,0 +1,135 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "rgName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide the name of the resource group where the Azure Doc Intel instance that will be created"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Select the location for the Azure Doc Intel instance that will be created"
+            }
+        },
+        "prefix": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide name for the Azure Doc Intel instance that will be created"
+            }
+        },
+        "docSystemIdentity": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "docDisableNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "docRbacAuthz": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "docRestrictOutboundNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "docCmkKeyName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "docCmkKeyVersion": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "name-compliant-azureDocumentIntelligence": "[concat(parameters('prefix'), '-', parameters('location'), '-azdocintel')]",
+        "name-compliant-keyvault": "[take(concat(parameters('prefix'), '-', parameters('location'), '-kv'), 23)]",
+        "visionIdentity": {
+            "type": "SystemAssigned"
+        },
+        "denyFwAcl": {
+            "defaultAction": "Deny",
+            "bypass": "AzureServices",
+            "ipRules": [],
+            "virtualNetworkRules": []
+        },
+        "cmk": {
+            "keySource": "Microsoft.Keyvault",
+            "keyvaultproperties": {
+                "keyname": "[parameters('docCmkKeyName')]",
+                "keyVersion": "[parameters('docCmkKeyVersion')]",
+                "keyvaulturi": "[concat('https://', variables('name-compliant-keyvault'), '.vault.azure.net')]"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2022-09-01",
+            "name": "[parameters('rgName')]",
+            "location": "[parameters('location')]"
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "azureDocIntelCmk",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups/', parameters('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.CognitiveServices/accounts",
+                            "apiVersion": "2022-03-01",
+                            "name": "[variables('name-compliant-azureDocumentIntelligence')]",
+                            "location": "[parameters('location')]",
+                            "identity": "[if(equals(parameters('docSystemIdentity'), 'Yes'), variables('visionIdentity'), json('null'))]",
+                            "sku": {
+                                "name": "S0"
+                            },
+                            "kind": "FormRecognizer",
+                            "properties": {
+                                "customSubDomainName": "[toLower(variables('name-compliant-azureDocumentIntelligence'))]",
+                                "publicNetworkAccess": "[if(equals(parameters('docDisableNetworkAccess'), 'Yes'), 'Disabled', 'Enabled')]",
+                                "disableLocalAuth": "[if(equals(parameters('docRbacAuthz'), 'Yes'), bool('true'), bool('false'))]",
+                                "restrictOutboundNetworkAccess": "[if(equals(parameters('docRestrictOutboundNetworkAccess'), 'Yes'), bool('true'), bool('false'))]",
+                                "networkAcls": "[if(equals(parameters('docDisableNetworkAccess'), 'Yes'), variables('denyFwAcl'), json('null'))]",
+                                "encryption": "[if(not(empty(parameters('docCmkKeyName'))), variables('cmk'), json('null'))]"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

@@ -1,0 +1,22 @@
+parameters:
+  ServiceDirectory: ''
+  TestMarkArgument: ''
+  EnvVars: {}
+
+# Please use `$(TargetingString)` to refer to the python packages glob string. This variable is set from resolve-package-targeting.yml.
+steps:
+  - task: PythonScript@0
+    displayName: 'Run Breaking Changes'
+    inputs:
+      scriptPath: 'eng/scripts/dispatch_checks.py'
+      arguments: >-
+        "$(TargetingString)"
+        --service="${{ parameters.ServiceDirectory }}"
+        --checks="breaking"
+        --disable-compatibility-filter
+        --disablecov
+    env:
+      TOX_PIP_IMPL: "uv"
+      VIRTUAL_ENV: ""
+      PYTHONHOME: ""
+    condition: and(succeededOrFailed(), ne(variables['Skip.BreakingChanges'],'true'))

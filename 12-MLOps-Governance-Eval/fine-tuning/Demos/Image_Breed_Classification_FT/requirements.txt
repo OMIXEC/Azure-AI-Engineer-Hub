@@ -1,0 +1,14 @@
+openai
+python-dotenv
+pandas
+matplotlib
+pillow
+scikit-learn
+pydantic
+kaggle
+ipython
+ipykernel
+seaborn
+torch
+torchvision
+tqdm

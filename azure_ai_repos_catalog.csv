@@ -1,0 +1,28 @@
+#,Repo Name,Org,Category,Azure Service,Key Use Cases,Updated,URL
+1,openai,Azure-Samples,Azure OpenAI / LLM,Azure OpenAI Service,"Chat completions, embeddings, DALL-E, Whisper, fine-tuning",2025,https://github.com/Azure-Samples/openai
+2,azure-search-vector-samples,Azure,Search / RAG / Vector DB,Azure AI Search,"Vector search, hybrid search, semantic ranking, RAG",2025,https://github.com/Azure/azure-search-vector-samples
+3,azure-ai-search-multimodal-sample,Azure-Samples,Search / RAG / Vector DB,AI Search + Vision,"Multimodal search, image+text retrieval, vision grounding",2025,https://github.com/Azure-Samples/azure-ai-search-multimodal-sample
+4,cognitive-services-speech-sdk,Azure-Samples,Speech & Audio AI,Azure AI Speech,"STT, TTS, speaker recognition, translation, keyword detection",2025,https://github.com/Azure-Samples/cognitive-services-speech-sdk
+5,mslearn-mlops,MicrosoftLearning,MLOps / Model Lifecycle,Azure Machine Learning,"CI/CD for ML, MLflow, training pipelines, deployment",2025,https://github.com/MicrosoftLearning/mslearn-mlops
+6,mslearn-ai-vision,MicrosoftLearning,Computer Vision,Azure AI Vision,"Image analysis, OCR, face/object detection, custom vision",2025,https://github.com/MicrosoftLearning/mslearn-ai-vision
+7,AI-102-AIEngineer,MicrosoftLearning,Certification / AI Engineering,Azure AI Services (multi),"AI-102 labs — NLP, vision, speech, search, bots, OpenAI",2025,https://github.com/MicrosoftLearning/AI-102-AIEngineer
+8,mslearn-knowledge-mining,MicrosoftLearning,Knowledge Mining / Search,AI Search + Cognitive Skills,"Document indexing, enrichment pipelines, knowledge stores",2025,https://github.com/MicrosoftLearning/mslearn-knowledge-mining
+9,mslearn-ai-fundamentals,MicrosoftLearning,Certification / AI Fundamentals,Azure AI Services (multi),"AI-900 labs — ML basics, vision, NLP, generative AI",2025,https://github.com/MicrosoftLearning/mslearn-ai-fundamentals
+10,mslearn-ai-agents,MicrosoftLearning,AI Agents / Agentic AI,Azure AI Agent Service / Foundry,"Agent patterns, tool use, multi-agent orchestration",2025,https://github.com/MicrosoftLearning/mslearn-ai-agents
+11,azureai-samples,Azure-Samples,Azure OpenAI / LLM,Azure AI (multi),"End-to-end samples, agent service, Foundry, RAG notebooks",2025,https://github.com/Azure-Samples/azureai-samples
+12,azure-search-openai-demo,Azure-Samples,Search / RAG / Vector DB,AI Search + OpenAI,"ChatGPT over enterprise data, RAG pattern, Python backend",2025,https://github.com/Azure-Samples/azure-search-openai-demo
+13,contoso-chat,Azure-Samples,Azure OpenAI / LLM,AI Foundry + AI Search,"End-to-end RAG copilot, Prompty, retail chatbot",2025,https://github.com/Azure-Samples/contoso-chat
+14,foundry-samples,azure-ai-foundry,AI Agents / Agentic AI,Azure AI Foundry,"Foundry SDK, agent service, fine-tuning, model catalog",2025,https://github.com/azure-ai-foundry/foundry-samples
+15,AI-Engineer-Zero-to-Hero,Azure-Samples,Certification / AI Engineering,Azure AI (multi),"Progressive learning path, inference → governed agent fleets",2025,https://github.com/Azure-Samples/AI-Engineer-Zero-to-Hero
+16,azure-sdk-for-python,Azure,SDKs & Libraries,All Azure AI Services,"Python SDK — search, speech, vision, OpenAI, agents",2026,https://github.com/Azure/azure-sdk-for-python
+17,promptflow,microsoft,MLOps / Model Lifecycle,AI Foundry / Prompt Flow,"LLM app dev, evaluation, prompt versioning, CI/CD for LLMs",2025,https://github.com/microsoft/promptflow
+18,semantic-kernel,microsoft,AI Agents / Agentic AI,Azure OpenAI + multi-provider,"Agent SDK, plugin system, memory, planners, .NET/Python/Java",2026,https://github.com/microsoft/semantic-kernel
+19,azure-ai-document-processing-samples,Azure-Samples,Document Intelligence,Azure AI Document Intelligence,"PDF extraction, form recognition, invoice processing",2025,https://github.com/Azure-Samples/azure-ai-document-processing-samples
+20,fine-tuning,azure-ai-foundry,MLOps / Model Lifecycle,Azure AI Foundry,"Fine-tuning examples, sample datasets, custom model training",2025,https://github.com/azure-ai-foundry/fine-tuning
+21,RAG-Agents-Accelerator,pablomarin,AI Agents / Agentic AI,Azure AI (multi),"End-to-end RAG agent accelerator",2025,https://github.com/pablomarin/RAG-Agents-Accelerator
+22,azurechatgpt,imartinez2,Azure OpenAI / LLM,Azure OpenAI Service,"Azure-hosted ChatGPT clone",2025,https://github.com/imartinez2/azurechatgpt
+23,awesome-azure-openai-copilot,kimtth,Azure OpenAI / LLM,Azure OpenAI Service,"Curated list of copilot samples",2025,https://github.com/kimtth/awesome-azure-openai-copilot
+24,Azure-AI-Search-Vector-Store-LangChain-RAG-Pattern-with-Jira,jonathanscholtes,Search / RAG / Vector DB,AI Search + Jira,"RAG pattern with Jira data",2025,https://github.com/jonathanscholtes/Azure-AI-Search-Vector-Store-LangChain-RAG-Pattern-with-Jira
+25,ai-hub,Azure,AI Agents / Agentic AI,Azure AI (multi),"Central hub for AI engineering",2025,https://github.com/Azure/ai-hub
+26,Deploy-Your-AI-Application-In-Production,microsoft,MLOps / Model Lifecycle,Azure AI (multi),"Production deployment guide",2025,https://github.com/microsoft/Deploy-Your-AI-Application-In-Production
+27,azure-oai-proxy,Gyarbij,Azure OpenAI / LLM,Azure OpenAI Service,"Reverse proxy for Azure OpenAI",2025,https://github.com/Gyarbij/azure-oai-proxy

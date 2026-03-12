@@ -1,0 +1,135 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "rgName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide the name of the resource group where the Azure AI Vision instance that will be created"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Select the location for the Azure AI Vision instance that will be created"
+            }
+        },
+        "prefix": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Provide name for the Azure AI Vision instance that will be created"
+            }
+        },
+        "visionSystemIdentity": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "visionDisableNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "visionRbacAuthz": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "visionRestrictOutboundNetworkAccess": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "visionCmkKeyName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "visionCmkKeyVersion": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "name-compliant-azureComputerVision": "[concat(parameters('prefix'), '-', parameters('location'), '-aivision')]",
+        "name-compliant-keyvault": "[take(concat(parameters('prefix'), '-', parameters('location'), '-kv'), 23)]",
+        "visionIdentity": {
+            "type": "SystemAssigned"
+        },
+        "denyFwAcl": {
+            "defaultAction": "Deny",
+            "bypass": "AzureServices",
+            "ipRules": [],
+            "virtualNetworkRules": []
+        },
+        "cmk": {
+            "keySource": "Microsoft.Keyvault",
+            "keyvaultproperties": {
+                "keyname": "[parameters('visionCmkKeyName')]",
+                "keyVersion": "[parameters('visionCmkKeyVersion')]",
+                "keyvaulturi": "[concat('https://', variables('name-compliant-keyvault'), '.vault.azure.net')]"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2022-09-01",
+            "name": "[parameters('rgName')]",
+            "location": "[parameters('location')]"
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2022-09-01",
+            "name": "azureComputerVisionCmk",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups/', parameters('rgName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.CognitiveServices/accounts",
+                            "apiVersion": "2022-03-01",
+                            "name": "[variables('name-compliant-azureComputerVision')]",
+                            "location": "[parameters('location')]",
+                            "identity": "[if(equals(parameters('visionSystemIdentity'), 'Yes'), variables('visionIdentity'), json('null'))]",
+                            "sku": {
+                                "name": "S1"
+                            },
+                            "kind": "ComputerVision",
+                            "properties": {
+                                "customSubDomainName": "[toLower(variables('name-compliant-azureComputerVision'))]",
+                                "publicNetworkAccess": "[if(equals(parameters('visionDisableNetworkAccess'), 'Yes'), 'Disabled', 'Enabled')]",
+                                "disableLocalAuth": "[if(equals(parameters('visionRbacAuthz'), 'Yes'), bool('true'), bool('false'))]",
+                                "restrictOutboundNetworkAccess": "[if(equals(parameters('visionRestrictOutboundNetworkAccess'), 'Yes'), bool('true'), bool('false'))]",
+                                "networkAcls": "[if(equals(parameters('visionDisableNetworkAccess'), 'Yes'), variables('denyFwAcl'), json('null'))]",
+                                "encryption": "[if(not(empty(parameters('visionCmkKeyName'))), variables('cmk'), json('null'))]"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

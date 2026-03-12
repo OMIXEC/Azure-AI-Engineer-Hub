@@ -1,0 +1,1 @@
+This sample has been moved to https://github.com/azure-ai-foundry/voicelive-samples/tree/main/javascript/voice-live-avatar

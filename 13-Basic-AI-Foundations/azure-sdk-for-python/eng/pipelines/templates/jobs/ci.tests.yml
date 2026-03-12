@@ -1,0 +1,130 @@
+parameters:
+  - name: ServiceDirectory
+    type: string
+    default: ''
+  - name: TestPipeline
+    type: boolean
+    default: false
+  - name: TestMarkArgument
+    type: string
+    default: ''
+  - name: BeforeTestSteps
+    type: object
+    default: []
+  - name: AfterTestSteps
+    type: object
+    default: []
+  - name: BuildTargetingString
+    type: string
+    default: 'azure-*'
+  - name: TestTimeoutInMinutes
+    type: number
+    default: 60
+  - name: ToxEnvParallel
+    type: string
+    default: 'all'
+  - name: UnsupportedToxEnvironments
+    type: string
+    default: ''
+  - name: InjectedPackages
+    type: string
+    default: ''
+  - name: DependsOn
+    type: object
+    default: []
+  - name: Matrix
+    type: string
+  - name: UsePlatformContainer
+    type: boolean
+    default: false
+  - name: CloudConfig
+    type: object
+    default: {}
+  - name: TestProxy
+    type: boolean
+    default: false
+  - name: OSName
+    type: string
+  - name: EnvVars
+    type: object
+    default: {}
+
+jobs:
+  - job:
+    displayName: 'Test'
+    condition: |
+      and(
+        succeededOrFailed(),
+        ne(variables['Skip.Test'], 'true'),
+        ne(${{ parameters.Matrix }}, '{}')
+      )
+    timeoutInMinutes: ${{ parameters.TestTimeoutInMinutes }}
+
+    dependsOn:
+      - ${{ parameters.DependsOn }}
+
+    strategy:
+      matrix: $[ ${{ parameters.Matrix }} ]
+
+    pool:
+      name: $(Pool)
+      # 1es pipeline templates converts `image` to demands: ImageOverride under the hood
+      # which is incompatible with image selection in the default non-1es hosted pools
+      ${{ if eq(parameters.OSName, 'macOS') }}:
+        vmImage: $(OSVmImage)
+      ${{ else }}:
+        image: $(OSVmImage)
+      os: ${{ parameters.OSName }}
+
+    variables:
+    - template: ../variables/globals.yml
+    - name: InjectedPackages
+      value: ${{ parameters.InjectedPackages }}
+
+    steps:
+    - ${{ if eq(lower(parameters.OSName), 'macos') }}:
+      - pwsh: |
+          $dotnetroot = "$HOME/.dotnet"
+          Write-Host $dotnetroot
+          Write-Host "##vso[task.setvariable variable=DOTNET_ROOT]$dotnetroot"
+        displayName: 'Set DOTNET_ROOT'
+
+    - template: /eng/common/pipelines/templates/steps/sparse-checkout.yml
+      parameters:
+        ${{ if endsWith(variables['Build.Repository.Name'], '-pr') }}:
+          TokenToUseForAuth: $(azuresdk-github-pat)
+        Paths:
+          - '**'
+
+    # Authenticate to Azure Artifacts feed immediately after checkout to prevent 401 errors
+    # Public feeds have upstream sources enabled and require authentication for passthrough to pypi.org
+    - template: /eng/pipelines/templates/steps/auth-dev-feed.yml
+
+    - template: /eng/pipelines/templates/steps/download-package-artifacts.yml
+
+    - template: /eng/pipelines/templates/steps/resolve-package-targeting.yml
+      parameters:
+        BuildTargetingString: ${{ parameters.BuildTargetingString }}
+        PackagePropertiesFolder: $(Build.ArtifactStagingDirectory)/PackageInfo
+
+    - template: /eng/common/pipelines/templates/steps/verify-agent-os.yml
+      parameters:
+        AgentImage: ${{ parameters.OSName }}
+
+    - template: ../steps/build-test.yml
+      parameters:
+        ServiceDirectory: ${{ parameters.ServiceDirectory }}
+        TestMarkArgument: ${{ parameters.TestMarkArgument }}
+        AdditionalTestArgs: '--wheel_dir="$(Build.ArtifactStagingDirectory)"'
+        CoverageArg: $(CoverageArg)
+        PythonVersion: $(PythonVersion)
+        ToxTestEnv: $(toxenv)
+        ToxEnvParallel: ${{ parameters.ToxEnvParallel }}
+        InjectedPackages: $(InjectedPackages)
+        TestProxy: ${{ parameters.TestProxy }}
+        TestPipeline: ${{ parameters.TestPipeline }}
+        BeforeTestSteps:
+          - ${{ each step in parameters.BeforeTestSteps }}:
+            -  ${{ step }}
+        AfterTestSteps: ${{ parameters.AfterTestSteps }}
+        EnvVars: ${{ parameters.EnvVars }}

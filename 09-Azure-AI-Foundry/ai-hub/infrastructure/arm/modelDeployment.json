@@ -1,0 +1,90 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefix": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "aiModelDeploymentName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "aiModelVersion": {
+            "type": "string",
+            "defaultValue": "gpt-35-turbo",
+            "allowedValues": [
+                "gpt-4",
+                "gpt-4-32k",
+                "gpt-35-turbo",
+                "gpt-35-turbo-16k",
+                "gpt-4-vision",
+                "text-embedding-ada-002",
+                "gpt-4o"
+            ]
+        }
+    },
+    "variables": {
+        "nameCompliantAzureOpenAi": "[concat(parameters('prefix'), '-', parameters('location'), '-AzOpenAI')]",
+        "modelName": {
+            "text-embedding-ada-002": "text-embedding-ada-002",
+            "gpt-4-vision": "gpt-4",
+            "gpt-4-32k": "gpt-4-32k",
+            "gpt-4": "gpt-4",
+            "gpt-35-turbo": "gpt-35-turbo",
+            "gpt-35-turbo-16k": "gpt-35-turbo-16k",
+            "gpt-4o": "gpt-4o"
+        },
+        "modelVersion": {
+            "text-embedding-ada-002": "2",
+            "gpt-4-vision": "vision-preview",
+            "gpt-4-32k": "0613",
+            "gpt-4": "0613",
+            "gpt-35-turbo": "0301",
+            "gpt-35-turbo-16k": "0613",
+            "gpt-4o": "2024-05-13"
+        },
+        "deploymentNameSuffix": {
+            "text-embedding-ada-002": "text-embedding-ada-002",
+            "gpt-4-vision": "gpt4-vision",
+            "gpt-4-32k": "gpt4-32k",
+            "gpt-4": "gpt-4",
+            "gpt-35-turbo": "gpt-35-turbo",
+            "gpt-35-turbo-16k": "gpt-35-turbo-16k",
+            "gpt-4o": "gpt-4o"
+        },
+        "skuCapacity": {
+            "text-embedding-ada-002": 1,
+            "gpt-4-vision": 1,
+            "gpt-4-32k": 1,
+            "gpt-4": 1,
+            "gpt-35-turbo": 120,
+            "gpt-35-turbo-16k": 120,
+            "gpt-4o": 1
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.CognitiveServices/accounts/deployments",
+            "apiVersion": "2023-05-01",
+            "name": "[concat(variables('nameCompliantAzureOpenAi'), '/', parameters('aiModelDeploymentName'), '-', variables('deploymentNameSuffix')[parameters('aiModelVersion')])]",
+            "sku": {
+                "name": "Standard",
+                "capacity": "[variables('skuCapacity')[parameters('aiModelVersion')]]"
+            },
+            "properties": {
+                "model": {
+                    "format": "OpenAI",
+                    "name": "[variables('modelName')[parameters('aiModelVersion')]]",
+                    "version": "[variables('modelVersion')[parameters('aiModelVersion')]]"
+                },
+                "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
+                "raiPolicyName": "Microsoft.Default"
+            }
+        }
+    ]
+}
