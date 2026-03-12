@@ -8,7 +8,7 @@ This folder contains the following implementations:
 - **`azure-oai-proxy/`**: An enterprise-grade reverse proxy implementation for Azure OpenAI. Used for load balancing, logging, and security filtering between your apps and the foundational models.
 - **`azurechatgpt/`**: A production-ready, enterprise ChatGPT clone built specifically for Azure OpenAI. It features a modern UI, chat history, and enterprise authentication.
 - **`contoso-chat/`**: A sample retail copilot application (Contoso Chat) demonstrating how to build a customer service chat application using Prompt flow and Azure OpenAI.
-- **`awesome-copilot/`**: A curated collection of advanced copilot patterns and scenarios.
+- **`aio-openai-and-copilot/`**: A curated collection of Azure OpenAI and copilot advanced patterns and scenarios.
 - **`scenarios/`**: Various advanced use-case scenarios (like structured data extraction or function calling) isolated for deep-dive learning.
 
 ## 🚀 Getting Started
