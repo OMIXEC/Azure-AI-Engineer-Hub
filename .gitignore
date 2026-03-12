@@ -23,13 +23,13 @@ wheels/
 venv/
 ENV/
 
-# Environment variables
+# Environment variables - there is .env files for test purposes
 .env
+
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-*.env
 
 # IDEs
 .vscode/
