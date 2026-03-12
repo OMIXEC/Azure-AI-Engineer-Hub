@@ -4,11 +4,10 @@ Welcome to the **Azure AI Engineering Hub**, a highly structured, comprehensive,
 
 ## 🙏 Credits, Licenses, & Attribution
 
-This repository serves as a centralized gateway to the Microsoft AI ecosystem. We give **full credit and special thanks** to the **[Microsoft Learning (MSLearn)](https://github.com/MicrosoftLearning)** and **[Azure Samples](https://github.com/Azure-Samples)** teams.
+This repository serves as a centralized gateway to the Microsoft AI ecosystem. We give **full credit and special thanks** to the **[Microsoft Learning (MSLearn)](https://github.com/MicrosoftLearning)**, **[Azure Samples](https://github.com/Azure-Samples)**, and **[cc-01](https://github.com/cc-01)** teams.
 
-Most fundamental labs and SDK demonstrations are licensed under the **MIT License** provided by Microsoft. Certain open-source evaluation datasets and configurations utilized within this catalog fall under the **CC0 1.0 Universal** public domain dedication.
-
-➡️ **For full legal attributions, licensing details, and copyright information, please read the [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md) file.**
+For detailed licensing information (MIT, CC0 1.0) and full community attributions, please refer to:
+➡️ **[ACKNOWLEDGEMENTS.md](./ACKNOWLEDGEMENTS.md)**
 
 ---
 
